@@ -1,0 +1,35 @@
+[package]
+name = "fw-parsers"
+version.workspace = true
+edition.workspace = true
+description = "File format parsers for firmware analysis"
+
+[dependencies]
+# Binary parsing
+goblin.workspace = true
+object.workspace = true
+binread.workspace = true
+scroll.workspace = true
+
+# Compression
+flate2.workspace = true
+lz4_flex.workspace = true
+zstd.workspace = true
+bzip2.workspace = true
+xz2.workspace = true
+tar.workspace = true
+zip.workspace = true
+
+# String matching
+aho-corasick.workspace = true
+memchr.workspace = true
+
+# Utilities
+thiserror.workspace = true
+anyhow.workspace = true
+bytes.workspace = true
+hex.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

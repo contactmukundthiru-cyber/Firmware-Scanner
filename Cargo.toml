@@ -1,0 +1,101 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/fw-core",
+    "crates/fw-parsers",
+    "crates/fw-signatures",
+    "crates/fw-api",
+    "crates/fw-dashboard",
+    "crates/fw-marketing",
+    "crates/fw-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Proprietary"
+authors = ["Firmware Scanner Team"]
+repository = "https://github.com/your-org/firmware-scanner"
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# Binary parsing
+goblin = "0.8"
+object = "0.32"
+binread = "2.2"
+scroll = "0.12"
+
+# String/pattern matching
+aho-corasick = "1.1"
+memchr = "2.7"
+regex = "1.10"
+
+# Hashing
+sha2 = "0.10"
+blake3 = "1.5"
+md-5 = "0.10"
+
+# Compression
+flate2 = "1.0"
+lz4_flex = "0.11"
+zstd = "0.13"
+bzip2 = "0.4"
+xz2 = "0.1"
+tar = "0.4"
+zip = "0.6"
+
+# Web framework
+axum = { version = "0.7", features = ["multipart", "tokio"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace", "fs"] }
+
+# Database
+sqlx = { version = "0.7", features = ["runtime-tokio", "postgres", "uuid", "chrono", "json"] }
+
+# Auth
+jsonwebtoken = "9.2"
+argon2 = "0.5"
+
+# Frontend (Leptos)
+leptos = { version = "0.6", features = ["csr"] }
+leptos_axum = "0.6"
+leptos_router = "0.6"
+leptos_meta = "0.6"
+
+# Utilities
+uuid = { version = "1.6", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "1.0"
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+config = "0.14"
+clap = { version = "4.4", features = ["derive"] }
+async-trait = "0.1"
+bytes = "1.5"
+hex = "0.4"
+once_cell = "1.19"
+parking_lot = "0.12"
+dashmap = "5.5"
+rayon = "1.8"
+walkdir = "2.4"
+tempfile = "3.9"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3

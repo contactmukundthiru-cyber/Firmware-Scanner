@@ -1,0 +1,24 @@
+[package]
+name = "fw-signatures"
+version.workspace = true
+edition.workspace = true
+description = "Signature database for firmware capability detection"
+
+[dependencies]
+# Pattern matching
+aho-corasick.workspace = true
+memchr.workspace = true
+regex.workspace = true
+
+# Serialization
+serde.workspace = true
+serde_json.workspace = true
+toml.workspace = true
+
+# Utilities
+thiserror.workspace = true
+once_cell.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

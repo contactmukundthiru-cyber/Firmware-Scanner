@@ -1,0 +1,142 @@
+//! Markdown report generation
+
+use crate::{CoreResult, ScanResult, Severity, TriState};
+
+pub fn generate(result: &ScanResult) -> CoreResult<String> {
+    let mut md = String::new();
+
+    // Header
+    md.push_str("# Firmware Capability Analysis Report\n\n");
+    md.push_str(&format!("**Scan ID:** `{}`\n", result.id));
+    md.push_str(&format!("**Artifact Hash:** `{}`\n", result.artifact.hash));
+    md.push_str(&format!("**Scan Date:** {}\n", result.completed_at.format("%Y-%m-%d %H:%M:%S UTC")));
+    md.push_str(&format!("**Duration:** {}ms\n\n",
+        (result.completed_at - result.started_at).num_milliseconds()));
+
+    // Summary
+    md.push_str("## Executive Summary\n\n");
+    md.push_str(&format!("- **Files Analyzed:** {}\n", result.summary.total_files_analyzed));
+    md.push_str(&format!("- **Capabilities Found:** {}\n", result.summary.total_capabilities_found));
+    md.push_str(&format!("- **Dormant Capabilities:** {}\n", result.summary.dormant_capabilities_found));
+    md.push_str(&format!("- **Evidence Items:** {}\n\n", result.summary.evidence_items));
+
+    // Claim Compatibility
+    md.push_str("## Claim Compatibility\n\n");
+    md.push_str("| Claim | Compatible | Details |\n");
+    md.push_str("|-------|------------|--------|\n");
+
+    for verdict in &result.claim_verdicts {
+        let status = match verdict.compatible {
+            TriState::Yes => "YES",
+            TriState::No => "**NO**",
+            TriState::Indeterminate => "UNKNOWN",
+        };
+        let details = if verdict.failing_conditions.is_empty() {
+            "All conditions satisfied".to_string()
+        } else {
+            format!("{} conditions failed", verdict.failing_conditions.len())
+        };
+        md.push_str(&format!("| {} | {} | {} |\n", verdict.claim.name(), status, details));
+    }
+    md.push_str("\n");
+
+    // Capability Findings
+    md.push_str("## Capability Findings\n\n");
+
+    for (cap_type, detector_result) in &result.analysis.capabilities {
+        let status = match detector_result.capability_present {
+            TriState::Yes => "PRESENT",
+            TriState::No => "ABSENT",
+            TriState::Indeterminate => "UNKNOWN",
+        };
+
+        md.push_str(&format!("### {} ({})\n\n", cap_type, status));
+        md.push_str(&format!("{}\n\n", detector_result.summary));
+
+        if !detector_result.findings.is_empty() {
+            md.push_str("| Finding | Severity | Confidence | Tags |\n");
+            md.push_str("|---------|----------|------------|------|\n");
+
+            for finding in &detector_result.findings {
+                let severity_emoji = match finding.severity {
+                    Severity::Critical => "CRITICAL",
+                    Severity::High => "HIGH",
+                    Severity::Medium => "MEDIUM",
+                    Severity::Low => "LOW",
+                    Severity::Info => "INFO",
+                };
+                let tags = finding.tags.join(", ");
+                md.push_str(&format!("| {} | {} | {:.0}% | {} |\n",
+                    finding.name, severity_emoji, finding.confidence * 100.0, tags));
+            }
+            md.push_str("\n");
+        }
+    }
+
+    // Evidence Summary
+    if !result.evidence.is_empty() {
+        md.push_str("## Evidence Summary\n\n");
+        md.push_str(&format!("Total evidence items: {}\n\n", result.evidence.len()));
+
+        md.push_str("| ID | Finding | Offset | Length |\n");
+        md.push_str("|----|---------|--------|--------|\n");
+
+        for ev in result.evidence.iter().take(20) {
+            md.push_str(&format!("| `{}` | {} | 0x{:x} | {} bytes |\n",
+                &ev.id.to_string()[..8], ev.finding_id, ev.byte_offset, ev.byte_length));
+        }
+
+        if result.evidence.len() > 20 {
+            md.push_str(&format!("\n*... and {} more evidence items*\n", result.evidence.len() - 20));
+        }
+        md.push_str("\n");
+    }
+
+    // Methodology
+    md.push_str("## Methodology\n\n");
+    md.push_str("This analysis was performed using static binary analysis techniques:\n\n");
+    md.push_str("1. **Container Identification** - Magic byte detection and format parsing\n");
+    md.push_str("2. **Filesystem Extraction** - SquashFS, CramFS, ext4, JFFS2, UBI parsing\n");
+    md.push_str("3. **Binary Analysis** - ELF/PE parsing, symbol extraction, string analysis\n");
+    md.push_str("4. **Capability Detection** - Pattern matching against known signatures\n");
+    md.push_str("5. **Claim Verification** - Logical evaluation against capability findings\n");
+    md.push_str("6. **Evidence Preservation** - Cryptographic hashing and context capture\n\n");
+
+    // Disclaimer
+    md.push_str("## Disclaimer\n\n");
+    md.push_str("This report is based on static analysis only. Runtime behavior may differ.\n");
+    md.push_str("Dormant capabilities may be activated under specific conditions.\n");
+    md.push_str("This analysis does not constitute a security assessment.\n\n");
+
+    md.push_str("---\n");
+    md.push_str("*Generated by Firmware Scanner*\n");
+
+    Ok(md)
+}
+
+pub fn generate_html(result: &ScanResult) -> CoreResult<String> {
+    let markdown = generate(result)?;
+
+    // Basic HTML wrapper
+    let html = format!(r#"<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Firmware Analysis Report - {}</title>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }}
+        h1, h2, h3 {{ color: #333; }}
+        table {{ border-collapse: collapse; width: 100%; margin: 1em 0; }}
+        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+        th {{ background-color: #f2f2f2; }}
+        code {{ background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }}
+        pre {{ background: #f4f4f4; padding: 1em; overflow-x: auto; }}
+    </style>
+</head>
+<body>
+<pre>{}</pre>
+</body>
+</html>"#, result.id, markdown);
+
+    Ok(html)
+}

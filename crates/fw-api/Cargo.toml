@@ -1,0 +1,48 @@
+[package]
+name = "fw-api"
+version.workspace = true
+edition.workspace = true
+description = "REST API server for firmware scanner"
+
+[[bin]]
+name = "fw-api"
+path = "src/main.rs"
+
+[dependencies]
+fw-core = { path = "../fw-core" }
+
+# Async
+tokio.workspace = true
+async-trait.workspace = true
+
+# Web framework
+axum.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+
+# Database
+sqlx.workspace = true
+
+# Auth
+jsonwebtoken.workspace = true
+argon2.workspace = true
+
+# Serialization
+serde.workspace = true
+serde_json.workspace = true
+
+# Utilities
+uuid.workspace = true
+chrono.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+config.workspace = true
+bytes.workspace = true
+hex.workspace = true
+dashmap.workspace = true
+tempfile.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util"] }
