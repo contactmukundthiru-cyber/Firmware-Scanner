@@ -118,7 +118,7 @@ impl StringScanner {
         let text = String::from_utf8_lossy(data);
 
         // Literal matching with Aho-Corasick
-        for mat in self.literal_matcher.find_iter(&text) {
+        for mat in self.literal_matcher.find_iter(text.as_ref()) {
             let sig = &self.literal_signatures[mat.pattern().as_usize()];
             let matched = &text[mat.start()..mat.end()];
 
@@ -289,7 +289,7 @@ pub fn default_string_signatures() -> Vec<StringSignature> {
         StringSignature {
             id: "cred-api-key".to_string(),
             category: StringCategory::Credential,
-            pattern: r"(api[_-]?key|apikey)\s*[:=]\s*['\"]?[a-zA-Z0-9]{16,}".to_string(),
+            pattern: r#"(api[_-]?key|apikey)\s*[:=]\s*['"]?[a-zA-Z0-9]{16,}"#.to_string(),
             is_regex: true,
             case_sensitive: false,
             description: "Hardcoded API key".to_string(),
@@ -298,7 +298,7 @@ pub fn default_string_signatures() -> Vec<StringSignature> {
         StringSignature {
             id: "cred-password".to_string(),
             category: StringCategory::Credential,
-            pattern: r"(password|passwd|pwd)\s*[:=]\s*['\"]?[^\s'\"]{4,}".to_string(),
+            pattern: r#"(password|passwd|pwd)\s*[:=]\s*['"]?[^\s'"]{4,}"#.to_string(),
             is_regex: true,
             case_sensitive: false,
             description: "Hardcoded password".to_string(),

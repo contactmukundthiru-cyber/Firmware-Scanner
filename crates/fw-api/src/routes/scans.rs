@@ -9,6 +9,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use uuid::Uuid;
+use sqlx::Row;
 
 #[derive(Serialize)]
 pub struct ScanResponse {
@@ -65,18 +66,15 @@ pub async fn create_scan(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     // Create scan record
-    sqlx::query!(
-        r#"
-        INSERT INTO scans (id, name, status, created_at, artifact_size, config)
-        VALUES ($1, $2, 'pending', NOW(), $3, '{}')
-        "#,
-        scan_id,
-        file_name,
-        file_data.len() as i64
+    sqlx::query(
+        "INSERT INTO scans (id, name, status, created_at, artifact_size, config) VALUES ($1, $2, 'pending', NOW(), $3, '{}')"
     )
-    .execute(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .bind(scan_id)
+        .bind(&file_name)
+        .bind(file_data.len() as i64)
+        .execute(&state.db)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     // Spawn background scan task
     let state_clone = state.clone();
@@ -97,39 +95,31 @@ pub async fn list_scans(
     let limit = query.limit.unwrap_or(20).min(100);
     let offset = (query.page.unwrap_or(1) - 1) * limit;
 
-    let scans = sqlx::query_as!(
-        ScanRecord,
-        r#"
-        SELECT id, name, status, created_at, artifact_hash,
-               (SELECT COUNT(*) FROM findings WHERE scan_id = scans.id) as findings_count
-        FROM scans
-        ORDER BY created_at DESC
-        LIMIT $1 OFFSET $2
-        "#,
-        limit,
-        offset
+    let rows = sqlx::query(
+        "SELECT id, name, status, created_at, artifact_hash, (SELECT COUNT(*) FROM findings WHERE scan_id = scans.id) as findings_count FROM scans ORDER BY created_at DESC LIMIT $1 OFFSET $2"
     )
-    .fetch_all(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    let total = sqlx::query_scalar!("SELECT COUNT(*) FROM scans")
-        .fetch_one(&state.db)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(&state.db)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .unwrap_or(0);
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let scans = scans
-        .into_iter()
-        .map(|s| ScanResponse {
-            id: s.id,
-            name: s.name,
-            status: s.status,
-            created_at: s.created_at.to_string(),
-            artifact_hash: s.artifact_hash,
-            findings_count: s.findings_count.unwrap_or(0),
+    let scans: Vec<ScanResponse> = rows
+        .iter()
+        .map(|row| ScanResponse {
+            id: row.get("id"),
+            name: row.get("name"),
+            status: row.get("status"),
+            created_at: row.get::<chrono::DateTime<chrono::Utc>, _>("created_at").to_string(),
+            artifact_hash: row.get("artifact_hash"),
+            findings_count: row.get::<Option<i64>, _>("findings_count").unwrap_or(0),
         })
         .collect();
+
+    let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM scans")
+        .fetch_one(&state.db)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(Json(ScanListResponse { scans, total }))
 }
@@ -138,27 +128,22 @@ pub async fn get_scan(
     State(state): State<Arc<AppState>>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<ScanResponse>, StatusCode> {
-    let scan = sqlx::query_as!(
-        ScanRecord,
-        r#"
-        SELECT id, name, status, created_at, artifact_hash,
-               (SELECT COUNT(*) FROM findings WHERE scan_id = scans.id) as findings_count
-        FROM scans WHERE id = $1
-        "#,
-        id
+    let row = sqlx::query(
+        "SELECT id, name, status, created_at, artifact_hash, (SELECT COUNT(*) FROM findings WHERE scan_id = scans.id) as findings_count FROM scans WHERE id = $1"
     )
-    .fetch_optional(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-    .ok_or(StatusCode::NOT_FOUND)?;
+        .bind(id)
+        .fetch_optional(&state.db)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .ok_or(StatusCode::NOT_FOUND)?;
 
     Ok(Json(ScanResponse {
-        id: scan.id,
-        name: scan.name,
-        status: scan.status,
-        created_at: scan.created_at.to_string(),
-        artifact_hash: scan.artifact_hash,
-        findings_count: scan.findings_count.unwrap_or(0),
+        id: row.get("id"),
+        name: row.get("name"),
+        status: row.get("status"),
+        created_at: row.get::<chrono::DateTime<chrono::Utc>, _>("created_at").to_string(),
+        artifact_hash: row.get("artifact_hash"),
+        findings_count: row.get::<Option<i64>, _>("findings_count").unwrap_or(0),
     }))
 }
 
@@ -166,7 +151,8 @@ pub async fn delete_scan(
     State(state): State<Arc<AppState>>,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, StatusCode> {
-    sqlx::query!("DELETE FROM scans WHERE id = $1", id)
+    sqlx::query("DELETE FROM scans WHERE id = $1")
+        .bind(id)
         .execute(&state.db)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
@@ -182,17 +168,15 @@ pub async fn get_findings(
     State(state): State<Arc<AppState>>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Vec<serde_json::Value>>, StatusCode> {
-    let findings = sqlx::query_scalar!(
-        r#"SELECT evidence_json FROM findings WHERE scan_id = $1"#,
-        id
-    )
-    .fetch_all(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let rows = sqlx::query("SELECT evidence_json FROM findings WHERE scan_id = $1")
+        .bind(id)
+        .fetch_all(&state.db)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let findings: Vec<serde_json::Value> = findings
-        .into_iter()
-        .filter_map(|f| f)
+    let findings: Vec<serde_json::Value> = rows
+        .iter()
+        .filter_map(|row| row.get::<Option<serde_json::Value>, _>("evidence_json"))
         .collect();
 
     Ok(Json(findings))
@@ -202,17 +186,15 @@ pub async fn get_claims(
     State(state): State<Arc<AppState>>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Vec<serde_json::Value>>, StatusCode> {
-    let claims = sqlx::query_scalar!(
-        r#"SELECT failing_conditions FROM claim_verdicts WHERE scan_id = $1"#,
-        id
-    )
-    .fetch_all(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let rows = sqlx::query("SELECT failing_conditions FROM claim_verdicts WHERE scan_id = $1")
+        .bind(id)
+        .fetch_all(&state.db)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let claims: Vec<serde_json::Value> = claims
-        .into_iter()
-        .filter_map(|c| c)
+    let claims: Vec<serde_json::Value> = rows
+        .iter()
+        .filter_map(|row| row.get::<Option<serde_json::Value>, _>("failing_conditions"))
         .collect();
 
     Ok(Json(claims))
@@ -222,28 +204,20 @@ pub async fn get_evidence(
     State(state): State<Arc<AppState>>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Vec<serde_json::Value>>, StatusCode> {
-    let evidence = sqlx::query_scalar!(
-        r#"SELECT context_data FROM evidence_artifacts WHERE scan_id = $1"#,
-        id
-    )
-    .fetch_all(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let rows = sqlx::query("SELECT context_data FROM evidence_artifacts WHERE scan_id = $1")
+        .bind(id)
+        .fetch_all(&state.db)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    // Convert bytes to base64 for JSON
-    let evidence: Vec<serde_json::Value> = evidence
-        .into_iter()
-        .filter_map(|e| e.map(|data| serde_json::json!({ "data": hex::encode(data) })))
+    // Convert bytes to hex for JSON
+    let evidence: Vec<serde_json::Value> = rows
+        .iter()
+        .filter_map(|row| {
+            row.get::<Option<Vec<u8>>, _>("context_data")
+                .map(|data| serde_json::json!({ "data": hex::encode(data) }))
+        })
         .collect();
 
     Ok(Json(evidence))
-}
-
-struct ScanRecord {
-    id: Uuid,
-    name: String,
-    status: String,
-    created_at: chrono::DateTime<chrono::Utc>,
-    artifact_hash: Option<String>,
-    findings_count: Option<i64>,
 }

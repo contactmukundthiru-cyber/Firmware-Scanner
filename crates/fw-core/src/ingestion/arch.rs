@@ -2,6 +2,7 @@
 
 use fw_parsers::elf::ElfParser;
 use fw_parsers::pe::PeParser;
+use fw_parsers::FormatParser;
 use serde::{Deserialize, Serialize};
 
 /// CPU architecture

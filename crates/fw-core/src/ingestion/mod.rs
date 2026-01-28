@@ -13,6 +13,7 @@ pub use filesystem::{ExtractedFile, ExtractedFilesystem, FileType};
 use crate::{CoreError, CoreResult};
 use chrono::{DateTime, Utc};
 use fw_parsers::magic;
+use fw_parsers::FormatParser;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;

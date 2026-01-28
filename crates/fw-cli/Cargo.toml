@@ -10,9 +10,13 @@ path = "src/main.rs"
 
 [dependencies]
 fw-core = { path = "../fw-core" }
+fw-parsers = { path = "../fw-parsers" }
 
 # CLI
 clap.workspace = true
+
+# Crypto
+sha2.workspace = true
 
 # Async
 tokio.workspace = true

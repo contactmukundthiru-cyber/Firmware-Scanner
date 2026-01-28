@@ -27,35 +27,30 @@ pub struct ConfigResponse {
 pub async fn get_stats(
     State(state): State<Arc<AppState>>,
 ) -> Result<Json<StatsResponse>, StatusCode> {
-    let total = sqlx::query_scalar!("SELECT COUNT(*) FROM scans")
+    let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM scans")
         .fetch_one(&state.db)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .unwrap_or(0);
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let completed = sqlx::query_scalar!("SELECT COUNT(*) FROM scans WHERE status = 'completed'")
+    let completed: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM scans WHERE status = 'completed'")
         .fetch_one(&state.db)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .unwrap_or(0);
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let failed = sqlx::query_scalar!("SELECT COUNT(*) FROM scans WHERE status = 'failed'")
+    let failed: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM scans WHERE status = 'failed'")
         .fetch_one(&state.db)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .unwrap_or(0);
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let pending = sqlx::query_scalar!("SELECT COUNT(*) FROM scans WHERE status = 'pending' OR status = 'running'")
+    let pending: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM scans WHERE status = 'pending' OR status = 'running'")
         .fetch_one(&state.db)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .unwrap_or(0);
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let findings = sqlx::query_scalar!("SELECT COUNT(*) FROM findings")
+    let findings: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM findings")
         .fetch_one(&state.db)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .unwrap_or(0);
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(Json(StatsResponse {
         total_scans: total,

@@ -138,14 +138,14 @@ impl ElfParser {
         let symbols: Vec<ElfSymbol> = elf
             .syms
             .iter()
-            .map(|sym| symbol_to_struct(&elf, sym))
+            .map(|sym| symbol_to_struct(&elf, &sym))
             .collect();
 
         // Parse dynamic symbols
         let dynamic_symbols: Vec<ElfSymbol> = elf
             .dynsyms
             .iter()
-            .map(|sym| symbol_to_struct(&elf, sym))
+            .map(|sym| symbol_to_struct(&elf, &sym))
             .collect();
 
         // Extract imported libraries

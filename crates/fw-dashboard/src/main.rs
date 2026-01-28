@@ -7,8 +7,8 @@ mod pages;
 use leptos::*;
 
 fn main() {
-    console_error_panic_hook::set_once();
-    tracing_wasm::set_as_global_default();
+    // Initialize logging
+    _ = console_log::init_with_level(log::Level::Debug);
 
     mount_to_body(|| {
         view! {

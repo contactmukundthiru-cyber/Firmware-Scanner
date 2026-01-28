@@ -261,7 +261,7 @@ impl FormatParser for ZipParser {
 
     fn parse(&self, data: &[u8]) -> ParseResult<ParsedContent> {
         let reader = Cursor::new(data);
-        let archive =
+        let mut archive =
             zip::ZipArchive::new(reader).map_err(|e| ParseError::Archive(e.to_string()))?;
 
         let mut entries = Vec::new();

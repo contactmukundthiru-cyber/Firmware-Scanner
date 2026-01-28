@@ -32,6 +32,8 @@ thiserror.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 config.workspace = true
+log = "0.4"
+console_log = "1.0"
 
 [features]
 default = ["ssr"]

@@ -248,8 +248,8 @@ fn cmd_info(file: PathBuf) {
     }
 
     // Format detection
-    if let Some(format) = fw_parsers::magic::detect_file_type(&data) {
-        println!("Format: {}", format);
+    if let Some((_format, desc)) = fw_parsers::magic::detect_format(&data) {
+        println!("Format: {}", desc);
     } else {
         println!("Format: Unknown");
     }

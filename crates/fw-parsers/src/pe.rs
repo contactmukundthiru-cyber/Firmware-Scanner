@@ -190,11 +190,14 @@ impl PeParser {
         let exports: Vec<PeExport> = pe
             .exports
             .iter()
-            .map(|e| PeExport {
-                name: e.name.map(|s| s.to_string()),
-                ordinal: e.ordinal.unwrap_or(0) as u32,
-                address: e.offset.unwrap_or(0) as u64,
-                forwarder: e.reexport.map(|r| format!("{}.{}", r.0, r.1)),
+            .enumerate()
+            .map(|(i, e)| {
+                PeExport {
+                    name: e.name.map(|s| s.to_string()),
+                    ordinal: i as u32,
+                    address: e.rva as u64,
+                    forwarder: e.reexport.as_ref().map(|r| format!("{:?}", r)),
+                }
             })
             .collect();
 
@@ -511,28 +514,24 @@ fn extract_wide_strings(
     strings
 }
 
-fn parse_debug_info(pe: &PE, data: &[u8]) -> Option<PeDebugInfo> {
+fn parse_debug_info(pe: &PE, _data: &[u8]) -> Option<PeDebugInfo> {
     // Check debug directory
     if let Some(ref debug_data) = pe.debug_data {
         if let Some(ref codeview) = debug_data.codeview_pdb70_debug_info {
+            // Convert signature bytes to hex string
+            let guid = codeview.signature
+                .iter()
+                .map(|b| format!("{:02X}", b))
+                .collect::<String>();
+
+            // Convert filename bytes to string
+            let pdb_path = String::from_utf8_lossy(codeview.filename).to_string();
+
             return Some(PeDebugInfo {
                 debug_type: "CodeView PDB70".to_string(),
                 timestamp: 0,
-                pdb_path: Some(codeview.filename.to_string()),
-                guid: Some(format!(
-                    "{:08X}{:04X}{:04X}{:02X}{:02X}{:02X}{:02X}{:02X}{:02X}{:02X}{:02X}",
-                    codeview.signature.data1,
-                    codeview.signature.data2,
-                    codeview.signature.data3,
-                    codeview.signature.data4[0],
-                    codeview.signature.data4[1],
-                    codeview.signature.data4[2],
-                    codeview.signature.data4[3],
-                    codeview.signature.data4[4],
-                    codeview.signature.data4[5],
-                    codeview.signature.data4[6],
-                    codeview.signature.data4[7],
-                )),
+                pdb_path: Some(pdb_path),
+                guid: Some(guid),
                 age: Some(codeview.age),
             });
         }

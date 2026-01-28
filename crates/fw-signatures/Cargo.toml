@@ -19,6 +19,7 @@ toml.workspace = true
 thiserror.workspace = true
 once_cell.workspace = true
 tracing.workspace = true
+hex.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

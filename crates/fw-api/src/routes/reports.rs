@@ -5,12 +5,13 @@ use axum::{
     body::Body,
     extract::{Path, Query, State},
     http::{header, StatusCode},
-    response::{IntoResponse, Response},
+    response::Response,
     Json,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use uuid::Uuid;
+use sqlx::Row;
 
 #[derive(Deserialize)]
 pub struct ReportQuery {
@@ -32,18 +33,23 @@ pub async fn get_report(
     let format = query.format.unwrap_or_else(|| "markdown".to_string());
 
     // Get scan result from database
-    let scan = sqlx::query!(
-        r#"SELECT name, status, artifact_hash, completed_at FROM scans WHERE id = $1"#,
-        id
+    let row = sqlx::query(
+        "SELECT name, status, artifact_hash, completed_at FROM scans WHERE id = $1"
     )
-    .fetch_optional(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-    .ok_or(StatusCode::NOT_FOUND)?;
+        .bind(id)
+        .fetch_optional(&state.db)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .ok_or(StatusCode::NOT_FOUND)?;
 
-    if scan.status != "completed" {
+    let status: String = row.get("status");
+    if status != "completed" {
         return Err(StatusCode::NOT_FOUND);
     }
+
+    let name: String = row.get("name");
+    let artifact_hash: Option<String> = row.get("artifact_hash");
+    let completed_at: Option<chrono::DateTime<chrono::Utc>> = row.get("completed_at");
 
     // Generate simple report
     let content = format!(
@@ -60,10 +66,10 @@ pub async fn get_report(
 Scan completed successfully.
 "#,
         id,
-        scan.name,
-        scan.status,
-        scan.artifact_hash.unwrap_or_else(|| "N/A".to_string()),
-        scan.completed_at.map(|t| t.to_string()).unwrap_or_else(|| "N/A".to_string())
+        name,
+        status,
+        artifact_hash.unwrap_or_else(|| "N/A".to_string()),
+        completed_at.map(|t| t.to_string()).unwrap_or_else(|| "N/A".to_string())
     );
 
     Ok(Json(ReportResponse {
