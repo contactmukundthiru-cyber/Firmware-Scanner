@@ -1,0 +1,300 @@
+# Telemetry and Data Collection Signatures
+# Detects data collection, tracking, and telemetry capabilities
+
+[metadata]
+name = "Telemetry Signatures"
+version = "1.0.0"
+description = "Comprehensive telemetry and tracking detection patterns"
+
+# Device Identification Patterns
+[[identity]]
+name = "MAC Address Access"
+patterns = ["getmac", "ifconfig", "get_mac_addr", "HWaddr", "ether"]
+category = "hardware_id"
+severity = "medium"
+description = "MAC address retrieval"
+
+[[identity]]
+name = "IMEI Access"
+patterns = ["IMEI", "getDeviceId", "TelephonyManager", "imei"]
+category = "hardware_id"
+severity = "high"
+description = "Mobile device IMEI access"
+
+[[identity]]
+name = "Serial Number"
+patterns = ["serial_number", "getSerial", "SerialNumber", "hwid"]
+category = "hardware_id"
+severity = "medium"
+description = "Device serial number access"
+
+[[identity]]
+name = "CPU ID"
+patterns = ["CPUID", "cpuid", "processor_id", "__cpuid"]
+category = "hardware_id"
+severity = "medium"
+description = "CPU identification"
+
+[[identity]]
+name = "UUID Generation"
+patterns = ["uuid_generate", "UuidCreate", "GUID", "UUID"]
+category = "software_id"
+severity = "low"
+description = "Unique identifier generation"
+
+[[identity]]
+name = "Android ID"
+patterns = ["Settings.Secure.ANDROID_ID", "android_id"]
+category = "hardware_id"
+severity = "high"
+description = "Android device identifier"
+
+[[identity]]
+name = "UDID"
+patterns = ["UDID", "identifierForVendor", "advertisingIdentifier"]
+category = "hardware_id"
+severity = "high"
+description = "iOS device identifier"
+
+# Data Collection Patterns
+[[collection]]
+name = "Location Tracking"
+patterns = ["GPS", "geolocation", "latitude", "longitude", "CLLocation", "FusedLocationProvider"]
+category = "location"
+severity = "critical"
+description = "Location data collection"
+
+[[collection]]
+name = "User Agent Collection"
+patterns = ["User-Agent", "userAgent", "navigator.userAgent"]
+category = "fingerprint"
+severity = "medium"
+description = "Browser/device fingerprinting"
+
+[[collection]]
+name = "Screen Resolution"
+patterns = ["screen.width", "screen.height", "screenWidth", "DisplayMetrics"]
+category = "fingerprint"
+severity = "low"
+description = "Screen information collection"
+
+[[collection]]
+name = "Timezone Collection"
+patterns = ["getTimezone", "timezone", "TimeZone.getDefault"]
+category = "fingerprint"
+severity = "low"
+description = "Timezone information"
+
+[[collection]]
+name = "Language/Locale"
+patterns = ["Accept-Language", "navigator.language", "Locale.getDefault"]
+category = "fingerprint"
+severity = "low"
+description = "Language preference collection"
+
+[[collection]]
+name = "Installed Apps"
+patterns = ["PackageManager", "getInstalledPackages", "installedApps"]
+category = "privacy"
+severity = "critical"
+description = "Installed application enumeration"
+
+[[collection]]
+name = "Contact Access"
+patterns = ["ContactsContract", "ABAddressBook", "contacts.read"]
+category = "privacy"
+severity = "critical"
+description = "Contact list access"
+
+[[collection]]
+name = "Calendar Access"
+patterns = ["CalendarContract", "EKEventStore", "calendar.read"]
+category = "privacy"
+severity = "high"
+description = "Calendar data access"
+
+[[collection]]
+name = "Camera Access"
+patterns = ["CameraManager", "AVCaptureDevice", "camera.capture"]
+category = "privacy"
+severity = "critical"
+description = "Camera hardware access"
+
+[[collection]]
+name = "Microphone Access"
+patterns = ["AudioRecord", "AVAudioRecorder", "microphone", "RECORD_AUDIO"]
+category = "privacy"
+severity = "critical"
+description = "Microphone/audio recording"
+
+[[collection]]
+name = "Clipboard Monitoring"
+patterns = ["ClipboardManager", "UIPasteboard", "clipboard"]
+category = "privacy"
+severity = "high"
+description = "Clipboard content access"
+
+[[collection]]
+name = "Keylogger Patterns"
+patterns = ["KeyLogger", "keypress", "onKeyDown", "keyboardHook"]
+category = "privacy"
+severity = "critical"
+description = "Keyboard input capture"
+
+# Analytics SDK Patterns
+[[analytics_sdk]]
+name = "Firebase Analytics"
+patterns = ["firebase", "FirebaseAnalytics", "com.google.firebase"]
+category = "sdk"
+severity = "high"
+
+[[analytics_sdk]]
+name = "Flurry Analytics"
+patterns = ["flurry", "FlurryAgent", "com.flurry"]
+category = "sdk"
+severity = "high"
+
+[[analytics_sdk]]
+name = "Adjust SDK"
+patterns = ["adjust.com", "AdjustSDK", "com.adjust"]
+category = "sdk"
+severity = "high"
+
+[[analytics_sdk]]
+name = "AppsFlyer"
+patterns = ["appsflyer", "AppsFlyerLib", "com.appsflyer"]
+category = "sdk"
+severity = "high"
+
+[[analytics_sdk]]
+name = "Branch.io"
+patterns = ["branch.io", "Branch", "io.branch"]
+category = "sdk"
+severity = "high"
+
+[[analytics_sdk]]
+name = "Kochava"
+patterns = ["kochava", "Kochava", "com.kochava"]
+category = "sdk"
+severity = "high"
+
+[[analytics_sdk]]
+name = "Localytics"
+patterns = ["localytics", "Localytics"]
+category = "sdk"
+severity = "high"
+
+[[analytics_sdk]]
+name = "Urban Airship"
+patterns = ["urbanairship", "UrbanAirship"]
+category = "sdk"
+severity = "medium"
+
+# Tracking Mechanisms
+[[tracking]]
+name = "Cookie Storage"
+patterns = ["document.cookie", "setCookie", "getCookie", "HttpCookie"]
+category = "web_tracking"
+severity = "medium"
+
+[[tracking]]
+name = "Local Storage"
+patterns = ["localStorage", "sessionStorage", "IndexedDB"]
+category = "web_tracking"
+severity = "medium"
+
+[[tracking]]
+name = "Fingerprint.js"
+patterns = ["fingerprint2", "FingerprintJS", "ClientJS"]
+category = "fingerprint"
+severity = "high"
+
+[[tracking]]
+name = "Canvas Fingerprint"
+patterns = ["toDataURL", "getImageData", "canvas fingerprint"]
+category = "fingerprint"
+severity = "high"
+
+[[tracking]]
+name = "WebGL Fingerprint"
+patterns = ["WEBGL_debug_renderer_info", "getParameter(", "VENDOR"]
+category = "fingerprint"
+severity = "high"
+
+[[tracking]]
+name = "Audio Fingerprint"
+patterns = ["AudioContext", "createOscillator", "createDynamicsCompressor"]
+category = "fingerprint"
+severity = "high"
+
+# Telemetry Data Formats
+[[data_format]]
+name = "Protobuf"
+patterns = ["protobuf", ".proto", "google.protobuf"]
+category = "serialization"
+severity = "low"
+
+[[data_format]]
+name = "MessagePack"
+patterns = ["msgpack", "MessagePack"]
+category = "serialization"
+severity = "low"
+
+[[data_format]]
+name = "BSON"
+patterns = ["bson", "BSON"]
+category = "serialization"
+severity = "low"
+
+[[data_format]]
+name = "Avro"
+patterns = ["avro", "Apache Avro"]
+category = "serialization"
+severity = "low"
+
+# Scheduling/Timing Patterns
+[[timing]]
+name = "Heartbeat"
+patterns = ["heartbeat", "ping", "keepalive", "health_check"]
+category = "periodic"
+severity = "medium"
+description = "Periodic check-in/heartbeat"
+
+[[timing]]
+name = "Scheduled Task"
+patterns = ["AlarmManager", "JobScheduler", "WorkManager", "crontab"]
+category = "periodic"
+severity = "medium"
+description = "Scheduled background tasks"
+
+[[timing]]
+name = "Boot Receiver"
+patterns = ["BOOT_COMPLETED", "boot.completed", "autostart"]
+category = "persistence"
+severity = "high"
+description = "Auto-start on boot"
+
+# Cloud Sync Patterns
+[[sync]]
+name = "iCloud Sync"
+patterns = ["CloudKit", "NSUbiquitousKeyValueStore", "iCloud"]
+category = "cloud"
+severity = "medium"
+
+[[sync]]
+name = "Google Drive Sync"
+patterns = ["drive.google.com", "GoogleDrive", "DriveAPI"]
+category = "cloud"
+severity = "medium"
+
+[[sync]]
+name = "Dropbox Sync"
+patterns = ["dropbox.com", "Dropbox", "dropboxapi"]
+category = "cloud"
+severity = "medium"
+
+[[sync]]
+name = "OneDrive Sync"
+patterns = ["onedrive.live.com", "OneDrive", "graph.microsoft.com"]
+category = "cloud"
+severity = "medium"

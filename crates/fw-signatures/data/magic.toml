@@ -1,0 +1,490 @@
+# Magic Byte Signatures for File Format Detection
+# Used to identify file types within firmware images
+
+[metadata]
+name = "Magic Signatures"
+version = "1.0.0"
+description = "Comprehensive file format magic byte signatures"
+
+# Executable Formats
+[[signatures]]
+name = "ELF"
+magic = [0x7F, 0x45, 0x4C, 0x46]
+offset = 0
+description = "ELF executable"
+category = "executable"
+
+[[signatures]]
+name = "PE/COFF MZ"
+magic = [0x4D, 0x5A]
+offset = 0
+description = "Windows PE/DOS executable"
+category = "executable"
+
+[[signatures]]
+name = "Mach-O 32-bit"
+magic = [0xFE, 0xED, 0xFA, 0xCE]
+offset = 0
+description = "Mach-O 32-bit executable"
+category = "executable"
+
+[[signatures]]
+name = "Mach-O 64-bit"
+magic = [0xFE, 0xED, 0xFA, 0xCF]
+offset = 0
+description = "Mach-O 64-bit executable"
+category = "executable"
+
+[[signatures]]
+name = "Mach-O Universal"
+magic = [0xCA, 0xFE, 0xBA, 0xBE]
+offset = 0
+description = "Mach-O Universal binary"
+category = "executable"
+
+[[signatures]]
+name = "Java Class"
+magic = [0xCA, 0xFE, 0xBA, 0xBE]
+offset = 0
+description = "Java class file"
+category = "executable"
+
+[[signatures]]
+name = "DEX"
+magic = [0x64, 0x65, 0x78, 0x0A]
+offset = 0
+description = "Android DEX bytecode"
+category = "executable"
+
+[[signatures]]
+name = "ARM Binary"
+magic_patterns = ["\\x00\\x00\\xa0\\xe1", "\\x00\\x00\\xa0\\xe3"]
+description = "ARM executable code patterns"
+category = "executable"
+
+[[signatures]]
+name = "MIPS Binary"
+magic_patterns = ["\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x0c"]
+description = "MIPS executable code patterns"
+category = "executable"
+
+# Archive Formats
+[[signatures]]
+name = "ZIP"
+magic = [0x50, 0x4B, 0x03, 0x04]
+offset = 0
+description = "ZIP archive"
+category = "archive"
+
+[[signatures]]
+name = "ZIP Empty"
+magic = [0x50, 0x4B, 0x05, 0x06]
+offset = 0
+description = "Empty ZIP archive"
+category = "archive"
+
+[[signatures]]
+name = "RAR"
+magic = [0x52, 0x61, 0x72, 0x21]
+offset = 0
+description = "RAR archive"
+category = "archive"
+
+[[signatures]]
+name = "7z"
+magic = [0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C]
+offset = 0
+description = "7-Zip archive"
+category = "archive"
+
+[[signatures]]
+name = "TAR"
+magic_str = "ustar"
+offset = 257
+description = "TAR archive"
+category = "archive"
+
+[[signatures]]
+name = "CPIO newc"
+magic_str = "070701"
+offset = 0
+description = "CPIO archive (newc format)"
+category = "archive"
+
+[[signatures]]
+name = "CPIO odc"
+magic_str = "070707"
+offset = 0
+description = "CPIO archive (odc format)"
+category = "archive"
+
+[[signatures]]
+name = "AR"
+magic_str = "!<arch>"
+offset = 0
+description = "Unix AR archive"
+category = "archive"
+
+# Compression Formats
+[[signatures]]
+name = "Gzip"
+magic = [0x1F, 0x8B]
+offset = 0
+description = "Gzip compressed"
+category = "compression"
+
+[[signatures]]
+name = "Bzip2"
+magic = [0x42, 0x5A, 0x68]
+offset = 0
+description = "Bzip2 compressed"
+category = "compression"
+
+[[signatures]]
+name = "XZ"
+magic = [0xFD, 0x37, 0x7A, 0x58, 0x5A, 0x00]
+offset = 0
+description = "XZ compressed"
+category = "compression"
+
+[[signatures]]
+name = "LZMA"
+magic = [0x5D, 0x00, 0x00]
+offset = 0
+description = "LZMA compressed"
+category = "compression"
+
+[[signatures]]
+name = "LZ4"
+magic = [0x04, 0x22, 0x4D, 0x18]
+offset = 0
+description = "LZ4 compressed"
+category = "compression"
+
+[[signatures]]
+name = "Zstandard"
+magic = [0x28, 0xB5, 0x2F, 0xFD]
+offset = 0
+description = "Zstandard compressed"
+category = "compression"
+
+[[signatures]]
+name = "LZO"
+magic = [0x89, 0x4C, 0x5A, 0x4F]
+offset = 0
+description = "LZO compressed"
+category = "compression"
+
+# Filesystem Formats
+[[signatures]]
+name = "SquashFS"
+magic_str = "hsqs"
+offset = 0
+description = "SquashFS filesystem"
+category = "filesystem"
+
+[[signatures]]
+name = "SquashFS LE"
+magic_str = "sqsh"
+offset = 0
+description = "SquashFS filesystem (little-endian)"
+category = "filesystem"
+
+[[signatures]]
+name = "CramFS"
+magic = [0x45, 0x3D, 0xCD, 0x28]
+offset = 0
+description = "CramFS filesystem"
+category = "filesystem"
+
+[[signatures]]
+name = "CramFS LE"
+magic = [0x28, 0xCD, 0x3D, 0x45]
+offset = 0
+description = "CramFS filesystem (little-endian)"
+category = "filesystem"
+
+[[signatures]]
+name = "JFFS2"
+magic = [0x85, 0x19]
+offset = 0
+description = "JFFS2 filesystem"
+category = "filesystem"
+
+[[signatures]]
+name = "JFFS2 LE"
+magic = [0x19, 0x85]
+offset = 0
+description = "JFFS2 filesystem (little-endian)"
+category = "filesystem"
+
+[[signatures]]
+name = "YAFFS"
+magic = [0x03, 0x00, 0x00, 0x00, 0x01]
+offset = 0
+description = "YAFFS filesystem"
+category = "filesystem"
+
+[[signatures]]
+name = "UBIFS"
+magic = [0x31, 0x18, 0x10, 0x06]
+offset = 0
+description = "UBIFS filesystem"
+category = "filesystem"
+
+[[signatures]]
+name = "UBI"
+magic_str = "UBI#"
+offset = 0
+description = "UBI volume"
+category = "filesystem"
+
+[[signatures]]
+name = "Ext2/3/4"
+magic = [0x53, 0xEF]
+offset = 1080
+description = "Ext2/3/4 filesystem"
+category = "filesystem"
+
+[[signatures]]
+name = "ROMFS"
+magic_str = "-rom1fs-"
+offset = 0
+description = "ROMFS filesystem"
+category = "filesystem"
+
+[[signatures]]
+name = "EROFS"
+magic = [0xE0, 0xF5, 0xE1, 0xE2]
+offset = 1024
+description = "EROFS filesystem"
+category = "filesystem"
+
+[[signatures]]
+name = "F2FS"
+magic = [0x10, 0x20, 0xF5, 0xF2]
+offset = 1024
+description = "F2FS filesystem"
+category = "filesystem"
+
+[[signatures]]
+name = "NTFS"
+magic_str = "NTFS"
+offset = 3
+description = "NTFS filesystem"
+category = "filesystem"
+
+[[signatures]]
+name = "FAT"
+magic_str = "FAT"
+offset = 54
+description = "FAT filesystem"
+category = "filesystem"
+
+# Boot/Firmware Formats
+[[signatures]]
+name = "U-Boot"
+magic = [0x27, 0x05, 0x19, 0x56]
+offset = 0
+description = "U-Boot image"
+category = "boot"
+
+[[signatures]]
+name = "U-Boot FIT"
+magic = [0xD0, 0x0D, 0xFE, 0xED]
+offset = 0
+description = "U-Boot Flattened Image Tree"
+category = "boot"
+
+[[signatures]]
+name = "Android Boot"
+magic_str = "ANDROID!"
+offset = 0
+description = "Android boot image"
+category = "boot"
+
+[[signatures]]
+name = "Android Sparse"
+magic = [0x3A, 0xFF, 0x26, 0xED]
+offset = 0
+description = "Android sparse image"
+category = "boot"
+
+[[signatures]]
+name = "FDT/DTB"
+magic = [0xD0, 0x0D, 0xFE, 0xED]
+offset = 0
+description = "Flattened Device Tree"
+category = "boot"
+
+[[signatures]]
+name = "Intel HEX"
+magic_str = ":10"
+offset = 0
+description = "Intel HEX format"
+category = "boot"
+
+[[signatures]]
+name = "Motorola S-record"
+magic_str = "S0"
+offset = 0
+description = "Motorola S-record"
+category = "boot"
+
+[[signatures]]
+name = "TRX"
+magic_str = "HDR0"
+offset = 0
+description = "TRX firmware header (Broadcom)"
+category = "boot"
+
+[[signatures]]
+name = "ASUS firmware"
+magic = [0x2A, 0x23, 0x24, 0x5E]
+offset = 0
+description = "ASUS firmware header"
+category = "boot"
+
+[[signatures]]
+name = "Netgear CHK"
+magic_str = "U2ND"
+offset = 0
+description = "Netgear CHK header"
+category = "boot"
+
+[[signatures]]
+name = "TP-Link firmware"
+magic = [0x01, 0x00, 0x00, 0x00]
+offset = 0
+description = "TP-Link firmware header"
+category = "boot"
+
+# Certificate/Key Formats
+[[signatures]]
+name = "PEM Certificate"
+magic_str = "-----BEGIN CERTIFICATE-----"
+offset = 0
+description = "PEM encoded certificate"
+category = "crypto"
+
+[[signatures]]
+name = "PEM Private Key"
+magic_str = "-----BEGIN PRIVATE KEY-----"
+offset = 0
+description = "PEM encoded private key"
+category = "crypto"
+
+[[signatures]]
+name = "PEM RSA Key"
+magic_str = "-----BEGIN RSA PRIVATE KEY-----"
+offset = 0
+description = "PEM encoded RSA private key"
+category = "crypto"
+
+[[signatures]]
+name = "DER Certificate"
+magic = [0x30, 0x82]
+offset = 0
+description = "DER encoded certificate/key"
+category = "crypto"
+
+[[signatures]]
+name = "PKCS7"
+magic_str = "-----BEGIN PKCS7-----"
+offset = 0
+description = "PKCS7 data"
+category = "crypto"
+
+[[signatures]]
+name = "SSH Public Key"
+magic_str = "ssh-rsa"
+offset = 0
+description = "SSH public key"
+category = "crypto"
+
+[[signatures]]
+name = "OpenSSH Private Key"
+magic_str = "-----BEGIN OPENSSH PRIVATE KEY-----"
+offset = 0
+description = "OpenSSH private key"
+category = "crypto"
+
+# Image Formats (may be embedded)
+[[signatures]]
+name = "PNG"
+magic = [0x89, 0x50, 0x4E, 0x47]
+offset = 0
+description = "PNG image"
+category = "media"
+
+[[signatures]]
+name = "JPEG"
+magic = [0xFF, 0xD8, 0xFF]
+offset = 0
+description = "JPEG image"
+category = "media"
+
+[[signatures]]
+name = "GIF"
+magic_str = "GIF8"
+offset = 0
+description = "GIF image"
+category = "media"
+
+[[signatures]]
+name = "BMP"
+magic_str = "BM"
+offset = 0
+description = "BMP image"
+category = "media"
+
+# Script/Config Formats
+[[signatures]]
+name = "Shell Script"
+magic_str = "#!/bin/sh"
+offset = 0
+description = "Shell script"
+category = "script"
+
+[[signatures]]
+name = "Bash Script"
+magic_str = "#!/bin/bash"
+offset = 0
+description = "Bash script"
+category = "script"
+
+[[signatures]]
+name = "Python Script"
+magic_str = "#!/usr/bin/python"
+offset = 0
+description = "Python script"
+category = "script"
+
+[[signatures]]
+name = "Perl Script"
+magic_str = "#!/usr/bin/perl"
+offset = 0
+description = "Perl script"
+category = "script"
+
+[[signatures]]
+name = "Lua Bytecode"
+magic = [0x1B, 0x4C, 0x75, 0x61]
+offset = 0
+description = "Lua bytecode"
+category = "script"
+
+# Database Formats
+[[signatures]]
+name = "SQLite"
+magic_str = "SQLite format 3"
+offset = 0
+description = "SQLite database"
+category = "database"
+
+[[signatures]]
+name = "Berkeley DB"
+magic = [0x00, 0x06, 0x15, 0x61]
+offset = 0
+description = "Berkeley DB"
+category = "database"

@@ -1,0 +1,356 @@
+# Vulnerability Signatures for Firmware Analysis
+# Detects known vulnerable libraries, dangerous patterns, and CVE indicators
+
+[metadata]
+name = "Vulnerability Signatures"
+version = "1.0.0"
+description = "Known vulnerabilities, insecure patterns, and dangerous code indicators"
+
+# Known Vulnerable Library Versions
+[[vulnerable_libs]]
+name = "OpenSSL Heartbleed"
+patterns = ["OpenSSL 1.0.1[a-f]", "OpenSSL 1.0.2-beta"]
+cve = "CVE-2014-0160"
+severity = "critical"
+description = "Heartbleed vulnerability in OpenSSL"
+fixed_version = "1.0.1g"
+
+[[vulnerable_libs]]
+name = "OpenSSL DROWN"
+patterns = ["SSLv2", "SSL_OP_NO_SSLv2"]
+cve = "CVE-2016-0800"
+severity = "high"
+description = "DROWN attack vulnerability"
+fixed_version = "1.0.2g"
+
+[[vulnerable_libs]]
+name = "OpenSSL Ancient"
+patterns = ["OpenSSL 0.9", "OpenSSL 1.0.0"]
+cve = "multiple"
+severity = "critical"
+description = "Severely outdated OpenSSL version with multiple vulnerabilities"
+
+[[vulnerable_libs]]
+name = "BusyBox Old"
+patterns = ["BusyBox v1.0", "BusyBox v1.1", "BusyBox v1.2"]
+cve = "multiple"
+severity = "high"
+description = "Outdated BusyBox with multiple vulnerabilities"
+
+[[vulnerable_libs]]
+name = "Dropbear SSH Old"
+patterns = ["dropbear_2014", "dropbear_2015", "dropbear_2016"]
+cve = "multiple"
+severity = "high"
+description = "Outdated Dropbear SSH with security issues"
+
+[[vulnerable_libs]]
+name = "uClibc Old"
+patterns = ["uClibc 0.9", "uClibc-ng 1.0.0", "uClibc-ng 1.0.1"]
+cve = "multiple"
+severity = "high"
+description = "Outdated uClibc with DNS vulnerabilities"
+
+[[vulnerable_libs]]
+name = "dnsmasq CVE-2017-14491"
+patterns = ["dnsmasq-2.7[0-7]"]
+cve = "CVE-2017-14491"
+severity = "critical"
+description = "dnsmasq heap buffer overflow"
+fixed_version = "2.78"
+
+[[vulnerable_libs]]
+name = "curl CVE-2023"
+patterns = ["curl 7.[0-7]", "curl 8.0", "curl 8.1", "curl 8.2", "curl 8.3"]
+cve = "CVE-2023-38545"
+severity = "high"
+description = "curl SOCKS5 heap buffer overflow"
+fixed_version = "8.4.0"
+
+[[vulnerable_libs]]
+name = "glibc Ghost"
+patterns = ["GLIBC_2.[0-9]\\b", "GLIBC_2.1[0-7]"]
+cve = "CVE-2015-0235"
+severity = "high"
+description = "glibc GHOST vulnerability"
+
+[[vulnerable_libs]]
+name = "Log4j"
+patterns = ["log4j-core-2.1[0-4]", "Log4j2", "log4j2"]
+cve = "CVE-2021-44228"
+severity = "critical"
+description = "Log4Shell RCE vulnerability"
+
+[[vulnerable_libs]]
+name = "libxml2 old"
+patterns = ["libxml2 2.9.[0-3]"]
+cve = "multiple"
+severity = "high"
+description = "Outdated libxml2 with XXE and other vulnerabilities"
+
+[[vulnerable_libs]]
+name = "expat old"
+patterns = ["expat_2.[0-3]"]
+cve = "multiple"
+severity = "high"
+description = "Outdated expat XML parser"
+
+[[vulnerable_libs]]
+name = "zlib CVE-2022"
+patterns = ["zlib 1.2.1[0-1]"]
+cve = "CVE-2022-37434"
+severity = "high"
+description = "zlib heap buffer overflow"
+fixed_version = "1.2.12"
+
+[[vulnerable_libs]]
+name = "sqlite old"
+patterns = ["SQLite 3.[0-2]"]
+cve = "multiple"
+severity = "medium"
+description = "Outdated SQLite with security issues"
+
+# Dangerous Function Patterns
+[[dangerous_functions]]
+name = "gets"
+patterns = ["gets(", "\\bgets\\b"]
+severity = "critical"
+description = "Buffer overflow vulnerability - never use gets()"
+cwe = "CWE-120"
+
+[[dangerous_functions]]
+name = "strcpy"
+patterns = ["strcpy(", "\\bstrcpy\\b"]
+severity = "high"
+description = "Buffer overflow risk - use strncpy or strlcpy"
+cwe = "CWE-120"
+
+[[dangerous_functions]]
+name = "strcat"
+patterns = ["strcat(", "\\bstrcat\\b"]
+severity = "high"
+description = "Buffer overflow risk - use strncat or strlcat"
+cwe = "CWE-120"
+
+[[dangerous_functions]]
+name = "sprintf"
+patterns = ["sprintf(", "\\bsprintf\\b"]
+severity = "high"
+description = "Buffer overflow and format string risks - use snprintf"
+cwe = "CWE-134"
+
+[[dangerous_functions]]
+name = "vsprintf"
+patterns = ["vsprintf(", "\\bvsprintf\\b"]
+severity = "high"
+description = "Buffer overflow risk - use vsnprintf"
+cwe = "CWE-134"
+
+[[dangerous_functions]]
+name = "scanf unbounded"
+patterns = ["scanf(\"%s", "scanf.*%[^\\d]*s"]
+severity = "high"
+description = "Unbounded scanf can cause buffer overflow"
+cwe = "CWE-120"
+
+[[dangerous_functions]]
+name = "system"
+patterns = ["system(", "\\bsystem\\b"]
+severity = "high"
+description = "Command injection risk - avoid system() calls"
+cwe = "CWE-78"
+
+[[dangerous_functions]]
+name = "popen"
+patterns = ["popen(", "\\bpopen\\b"]
+severity = "high"
+description = "Command injection risk"
+cwe = "CWE-78"
+
+[[dangerous_functions]]
+name = "exec family"
+patterns = ["execl(", "execle(", "execlp(", "execv(", "execvp(", "execvpe("]
+severity = "medium"
+description = "Process execution - potential command injection"
+cwe = "CWE-78"
+
+[[dangerous_functions]]
+name = "tmpnam/tempnam"
+patterns = ["tmpnam(", "tempnam(", "mktemp("]
+severity = "medium"
+description = "Race condition vulnerability - use mkstemp"
+cwe = "CWE-377"
+
+[[dangerous_functions]]
+name = "rand"
+patterns = ["\\brand\\(", "srand("]
+severity = "medium"
+description = "Weak PRNG - use cryptographic random for security"
+cwe = "CWE-338"
+
+[[dangerous_functions]]
+name = "alloca"
+patterns = ["alloca(", "\\balloca\\b"]
+severity = "medium"
+description = "Stack overflow risk on large allocations"
+cwe = "CWE-770"
+
+# Hardcoded Credentials Patterns
+[[credentials]]
+name = "Hardcoded Password"
+patterns = ["password\\s*=\\s*[\"'][^\"']+[\"']", "passwd\\s*=", "pwd\\s*="]
+severity = "critical"
+description = "Hardcoded password detected"
+cwe = "CWE-798"
+
+[[credentials]]
+name = "API Key"
+patterns = ["api_key\\s*=", "apikey\\s*=", "API_KEY"]
+severity = "critical"
+description = "Hardcoded API key detected"
+cwe = "CWE-798"
+
+[[credentials]]
+name = "Private Key"
+patterns = ["-----BEGIN RSA PRIVATE KEY-----", "-----BEGIN PRIVATE KEY-----", "-----BEGIN EC PRIVATE KEY-----"]
+severity = "critical"
+description = "Private key embedded in firmware"
+cwe = "CWE-321"
+
+[[credentials]]
+name = "AWS Credentials"
+patterns = ["AKIA[0-9A-Z]{16}", "aws_access_key_id", "aws_secret_access_key"]
+severity = "critical"
+description = "AWS credentials detected"
+cwe = "CWE-798"
+
+[[credentials]]
+name = "Default Credentials"
+patterns = ["admin:admin", "root:root", "admin:password", "user:user", "test:test"]
+severity = "critical"
+description = "Default credentials detected"
+cwe = "CWE-798"
+
+[[credentials]]
+name = "JWT Secret"
+patterns = ["jwt_secret", "JWT_SECRET", "token_secret"]
+severity = "critical"
+description = "JWT secret key detected"
+cwe = "CWE-798"
+
+# Weak Cryptography
+[[weak_crypto]]
+name = "MD5 for Security"
+patterns = ["MD5_Init", "md5_hash", "MD5_Final"]
+severity = "high"
+description = "MD5 should not be used for security purposes"
+cwe = "CWE-328"
+
+[[weak_crypto]]
+name = "SHA1 for Security"
+patterns = ["SHA1_Init", "sha1_hash"]
+severity = "medium"
+description = "SHA1 is deprecated for security purposes"
+cwe = "CWE-328"
+
+[[weak_crypto]]
+name = "DES Encryption"
+patterns = ["DES_", "\\bDES\\b", "DES_ecb_encrypt"]
+severity = "high"
+description = "DES is broken - use AES"
+cwe = "CWE-327"
+
+[[weak_crypto]]
+name = "RC4 Encryption"
+patterns = ["RC4", "ARC4", "ARCFOUR"]
+severity = "high"
+description = "RC4 has significant weaknesses"
+cwe = "CWE-327"
+
+[[weak_crypto]]
+name = "ECB Mode"
+patterns = ["AES_ecb", "ECB_MODE", "_ECB_"]
+severity = "medium"
+description = "ECB mode leaks patterns - use CBC or GCM"
+cwe = "CWE-327"
+
+[[weak_crypto]]
+name = "Weak Key Size"
+patterns = ["RSA.*512", "RSA.*1024", "AES.*128"]
+severity = "medium"
+description = "Potentially weak key size"
+cwe = "CWE-326"
+
+# Backdoor/Malware Indicators
+[[backdoor]]
+name = "Reverse Shell"
+patterns = ["/bin/sh -i", "nc -e", "netcat -e", "bash -i >& /dev/tcp"]
+severity = "critical"
+description = "Reverse shell command detected"
+cwe = "CWE-506"
+
+[[backdoor]]
+name = "Bind Shell"
+patterns = ["nc -l -p", "netcat -l", "-lvnp"]
+severity = "critical"
+description = "Bind shell command detected"
+cwe = "CWE-506"
+
+[[backdoor]]
+name = "Magic Backdoor"
+patterns = ["MAGIC_BACKDOOR", "SECRET_KEY", "HIDDEN_ADMIN"]
+severity = "critical"
+description = "Potential backdoor indicator"
+cwe = "CWE-506"
+
+[[backdoor]]
+name = "Debug Backdoor"
+patterns = ["debug_mode.*true", "ENABLE_DEBUG", "backdoor_enabled"]
+severity = "high"
+description = "Debug backdoor indicator"
+cwe = "CWE-489"
+
+# Format String Vulnerabilities
+[[format_string]]
+name = "printf user input"
+patterns = ["printf(user", "printf(input", "printf(buf"]
+severity = "critical"
+description = "Format string vulnerability"
+cwe = "CWE-134"
+
+[[format_string]]
+name = "syslog format string"
+patterns = ["syslog(.*%s"]
+severity = "high"
+description = "Syslog format string risk"
+cwe = "CWE-134"
+
+# Integer Overflow Patterns
+[[integer_overflow]]
+name = "Malloc multiplication"
+patterns = ["malloc.*\\*", "calloc.*\\*.*\\*"]
+severity = "medium"
+description = "Potential integer overflow in allocation size"
+cwe = "CWE-190"
+
+[[integer_overflow]]
+name = "Size calculation"
+patterns = ["size_t.*\\+", "int.*size.*\\+"]
+severity = "medium"
+description = "Potential integer overflow in size calculation"
+cwe = "CWE-190"
+
+# Race Conditions
+[[race_condition]]
+name = "TOCTOU"
+patterns = ["access(.*fopen", "stat(.*open"]
+severity = "medium"
+description = "Time-of-check to time-of-use race condition"
+cwe = "CWE-367"
+
+[[race_condition]]
+name = "Signal Handler"
+patterns = ["signal(", "sigaction("]
+severity = "low"
+description = "Signal handlers can cause race conditions"
+cwe = "CWE-364"

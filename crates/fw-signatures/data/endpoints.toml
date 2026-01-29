@@ -1,0 +1,407 @@
+# Known Endpoints Database for Firmware Analysis
+# Detects communication with known telemetry, C2, and suspicious servers
+
+[metadata]
+name = "Endpoint Signatures"
+version = "1.0.0"
+description = "Known endpoints for telemetry, analytics, and suspicious destinations"
+
+# Major Analytics/Telemetry Providers
+[[telemetry.google]]
+name = "Google Analytics"
+domains = [
+    "google-analytics.com",
+    "www.google-analytics.com",
+    "ssl.google-analytics.com",
+    "analytics.google.com",
+    "googletagmanager.com",
+    "www.googletagmanager.com",
+    "tagmanager.google.com",
+    "doubleclick.net",
+    "googlesyndication.com",
+]
+severity = "high"
+category = "analytics"
+description = "Google's analytics and advertising tracking"
+
+[[telemetry.facebook]]
+name = "Facebook/Meta Tracking"
+domains = [
+    "facebook.com",
+    "connect.facebook.net",
+    "pixel.facebook.com",
+    "graph.facebook.com",
+    "analytics.facebook.com",
+    "facebook.net",
+]
+severity = "high"
+category = "analytics"
+description = "Facebook/Meta tracking and analytics"
+
+[[telemetry.microsoft]]
+name = "Microsoft Telemetry"
+domains = [
+    "telemetry.microsoft.com",
+    "vortex.data.microsoft.com",
+    "settings-win.data.microsoft.com",
+    "watson.microsoft.com",
+    "wns.windows.com",
+    "api.cortana.ai",
+]
+severity = "medium"
+category = "telemetry"
+description = "Microsoft Windows and service telemetry"
+
+[[telemetry.apple]]
+name = "Apple Analytics"
+domains = [
+    "metrics.apple.com",
+    "xp.apple.com",
+    "idiagnostics.apple.com",
+    "pancake.apple.com",
+]
+severity = "medium"
+category = "analytics"
+description = "Apple device analytics"
+
+[[telemetry.amazon]]
+name = "Amazon/AWS Telemetry"
+domains = [
+    "device-metrics-us.amazon.com",
+    "device-metrics-us-2.amazon.com",
+    "unagi.amazon.com",
+    "todo-ta-g7g.amazon.com",
+]
+severity = "medium"
+category = "telemetry"
+description = "Amazon device telemetry"
+
+# Third-Party Analytics Platforms
+[[telemetry.mixpanel]]
+name = "Mixpanel"
+domains = ["api.mixpanel.com", "mixpanel.com", "cdn.mxpnl.com"]
+severity = "high"
+category = "analytics"
+
+[[telemetry.amplitude]]
+name = "Amplitude"
+domains = ["api.amplitude.com", "api2.amplitude.com", "cdn.amplitude.com"]
+severity = "high"
+category = "analytics"
+
+[[telemetry.segment]]
+name = "Segment"
+domains = ["api.segment.io", "cdn.segment.com", "api.segment.com"]
+severity = "high"
+category = "analytics"
+
+[[telemetry.heap]]
+name = "Heap Analytics"
+domains = ["heapanalytics.com", "heap.io", "cdn.heapanalytics.com"]
+severity = "high"
+category = "analytics"
+
+[[telemetry.hotjar]]
+name = "Hotjar"
+domains = ["hotjar.com", "script.hotjar.com", "static.hotjar.com", "vars.hotjar.com"]
+severity = "high"
+category = "analytics"
+
+[[telemetry.fullstory]]
+name = "FullStory"
+domains = ["fullstory.com", "rs.fullstory.com", "edge.fullstory.com"]
+severity = "high"
+category = "session_recording"
+
+[[telemetry.mouseflow]]
+name = "Mouseflow"
+domains = ["mouseflow.com", "a.mouseflow.com"]
+severity = "high"
+category = "session_recording"
+
+[[telemetry.crazyegg]]
+name = "Crazy Egg"
+domains = ["crazyegg.com", "script.crazyegg.com"]
+severity = "high"
+category = "session_recording"
+
+[[telemetry.inspectlet]]
+name = "Inspectlet"
+domains = ["inspectlet.com", "cdn.inspectlet.com"]
+severity = "high"
+category = "session_recording"
+
+# Crash Reporting Services
+[[telemetry.crashlytics]]
+name = "Firebase Crashlytics"
+domains = ["firebase-crashlytics.com", "crashlytics.com", "firebaseinstallations.googleapis.com"]
+severity = "medium"
+category = "crash_reporting"
+
+[[telemetry.sentry]]
+name = "Sentry"
+domains = ["sentry.io", "ingest.sentry.io", "o*.ingest.sentry.io"]
+severity = "medium"
+category = "crash_reporting"
+
+[[telemetry.bugsnag]]
+name = "Bugsnag"
+domains = ["bugsnag.com", "notify.bugsnag.com", "sessions.bugsnag.com"]
+severity = "medium"
+category = "crash_reporting"
+
+[[telemetry.raygun]]
+name = "Raygun"
+domains = ["raygun.com", "api.raygun.com"]
+severity = "medium"
+category = "crash_reporting"
+
+[[telemetry.rollbar]]
+name = "Rollbar"
+domains = ["rollbar.com", "api.rollbar.com"]
+severity = "medium"
+category = "crash_reporting"
+
+# Attribution/Marketing Platforms
+[[telemetry.adjust]]
+name = "Adjust"
+domains = ["adjust.com", "app.adjust.com", "adj.st"]
+severity = "high"
+category = "attribution"
+
+[[telemetry.appsflyer]]
+name = "AppsFlyer"
+domains = ["appsflyer.com", "app.appsflyer.com", "onelink.me"]
+severity = "high"
+category = "attribution"
+
+[[telemetry.branch]]
+name = "Branch"
+domains = ["branch.io", "api.branch.io", "app.link"]
+severity = "high"
+category = "attribution"
+
+[[telemetry.kochava]]
+name = "Kochava"
+domains = ["kochava.com", "control.kochava.com", "imp.kochava.com"]
+severity = "high"
+category = "attribution"
+
+[[telemetry.singular]]
+name = "Singular"
+domains = ["singular.net", "sdk.singular.net"]
+severity = "high"
+category = "attribution"
+
+# IoT Cloud Platforms
+[[iot.aws]]
+name = "AWS IoT"
+domains = [
+    "iot.*.amazonaws.com",
+    "data.iot.*.amazonaws.com",
+    "*.iot.*.amazonaws.com",
+]
+severity = "medium"
+category = "iot_cloud"
+
+[[iot.azure]]
+name = "Azure IoT"
+domains = [
+    "azure-devices.net",
+    "*.azure-devices.net",
+    "*.servicebus.windows.net",
+]
+severity = "medium"
+category = "iot_cloud"
+
+[[iot.google]]
+name = "Google Cloud IoT"
+domains = [
+    "cloudiot.googleapis.com",
+    "pubsub.googleapis.com",
+    "mqtt.googleapis.com",
+]
+severity = "medium"
+category = "iot_cloud"
+
+[[iot.tuya]]
+name = "Tuya Smart"
+domains = [
+    "tuya.com",
+    "*.tuya.com",
+    "tuyaus.com",
+    "tuyaeu.com",
+    "tuyacn.com",
+    "m*.tuyaus.com",
+    "m*.tuyaeu.com",
+]
+severity = "high"
+category = "iot_cloud"
+description = "Tuya is a major Chinese IoT platform - data may be sent to China"
+
+[[iot.xiaomi]]
+name = "Xiaomi IoT"
+domains = [
+    "xiaomi.com",
+    "*.xiaomi.com",
+    "mi.com",
+    "*.mi.com",
+    "xiaomiyoupin.com",
+]
+severity = "high"
+category = "iot_cloud"
+description = "Xiaomi smart home platform - data may be sent to China"
+
+[[iot.alibaba]]
+name = "Alibaba IoT"
+domains = [
+    "iot.aliyun.com",
+    "*.iot.aliyun.com",
+    "link.aliyun.com",
+]
+severity = "high"
+category = "iot_cloud"
+description = "Alibaba IoT platform - data sent to China"
+
+[[iot.smartthings]]
+name = "SmartThings"
+domains = ["smartthings.com", "api.smartthings.com", "*.smartthings.com"]
+severity = "medium"
+category = "iot_cloud"
+
+[[iot.ifttt]]
+name = "IFTTT"
+domains = ["ifttt.com", "maker.ifttt.com", "*.ifttt.com"]
+severity = "medium"
+category = "iot_cloud"
+
+# Update/OTA Services
+[[update.generic]]
+name = "Generic Update Endpoints"
+patterns = ["update.*.com", "ota.*.com", "fota.*.com", "firmware.*.com", "download.*.com"]
+severity = "medium"
+category = "ota"
+description = "Firmware/OTA update endpoints"
+
+[[update.android]]
+name = "Android/Google Update"
+domains = [
+    "android.googleapis.com",
+    "android.clients.google.com",
+    "play.google.com",
+    "*.gvt1.com",
+    "*.gvt2.com",
+]
+severity = "low"
+category = "ota"
+
+[[update.apple]]
+name = "Apple Update"
+domains = [
+    "appldnld.apple.com",
+    "swcdn.apple.com",
+    "swscan.apple.com",
+    "swdist.apple.com",
+]
+severity = "low"
+category = "ota"
+
+# Suspicious/Known Bad Domains
+[[suspicious.dga]]
+name = "DGA-like Patterns"
+patterns = [
+    "[a-z]{20,}\\.(com|net|org|info)",
+    "[0-9a-f]{32}\\.",
+    "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}",
+]
+severity = "critical"
+category = "suspicious"
+description = "Domain Generation Algorithm patterns"
+
+[[suspicious.dynamic_dns]]
+name = "Dynamic DNS"
+domains = [
+    "no-ip.com",
+    "no-ip.org",
+    "dyndns.org",
+    "dyndns.com",
+    "duckdns.org",
+    "dynu.com",
+    "freedns.afraid.org",
+    "changeip.com",
+]
+severity = "high"
+category = "suspicious"
+description = "Dynamic DNS services often used by malware"
+
+[[suspicious.url_shorteners]]
+name = "URL Shorteners"
+domains = [
+    "bit.ly",
+    "t.co",
+    "goo.gl",
+    "tinyurl.com",
+    "is.gd",
+    "ow.ly",
+    "buff.ly",
+    "adf.ly",
+]
+severity = "medium"
+category = "suspicious"
+description = "URL shorteners can hide malicious destinations"
+
+[[suspicious.paste_sites]]
+name = "Paste Sites"
+domains = [
+    "pastebin.com",
+    "hastebin.com",
+    "paste.ee",
+    "dpaste.com",
+    "ghostbin.co",
+]
+severity = "high"
+category = "suspicious"
+description = "Paste sites sometimes used for C2 or data exfiltration"
+
+[[suspicious.file_sharing]]
+name = "File Sharing Services"
+domains = [
+    "mega.nz",
+    "mega.co.nz",
+    "sendspace.com",
+    "zippyshare.com",
+    "mediafire.com",
+    "4shared.com",
+]
+severity = "medium"
+category = "suspicious"
+description = "File sharing services can be used for data exfiltration"
+
+# VPN/Proxy Services (may indicate evasion)
+[[suspicious.vpn]]
+name = "VPN/Proxy Services"
+domains = [
+    "nordvpn.com",
+    "expressvpn.com",
+    "surfshark.com",
+    "*.tor2web.org",
+    "*.onion.to",
+    "torproject.org",
+]
+severity = "high"
+category = "suspicious"
+description = "VPN/Proxy/Tor services may indicate evasion attempts"
+
+# Time Servers (normal but noteworthy)
+[[benign.time]]
+name = "NTP Servers"
+domains = [
+    "pool.ntp.org",
+    "time.nist.gov",
+    "time.google.com",
+    "time.windows.com",
+    "time.apple.com",
+]
+severity = "info"
+category = "time_sync"
+description = "Standard NTP time servers"

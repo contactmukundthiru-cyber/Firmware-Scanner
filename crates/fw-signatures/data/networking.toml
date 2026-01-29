@@ -1,0 +1,303 @@
+# Networking Signatures for Firmware Analysis
+# Detects network capabilities, endpoints, and protocols
+
+[metadata]
+name = "Networking Signatures"
+version = "1.0.0"
+description = "Comprehensive network capability detection patterns"
+
+# Known telemetry/analytics endpoints
+[[endpoints]]
+name = "Google Analytics"
+patterns = ["google-analytics.com", "www.googletagmanager.com", "analytics.google.com"]
+category = "telemetry"
+severity = "high"
+
+[[endpoints]]
+name = "Facebook Pixel"
+patterns = ["connect.facebook.net", "pixel.facebook.com", "facebook.com/tr"]
+category = "telemetry"
+severity = "high"
+
+[[endpoints]]
+name = "Mixpanel"
+patterns = ["api.mixpanel.com", "mixpanel.com"]
+category = "telemetry"
+severity = "high"
+
+[[endpoints]]
+name = "Amplitude"
+patterns = ["api.amplitude.com", "amplitude.com"]
+category = "telemetry"
+severity = "high"
+
+[[endpoints]]
+name = "Segment"
+patterns = ["api.segment.io", "cdn.segment.com"]
+category = "telemetry"
+severity = "high"
+
+[[endpoints]]
+name = "Crashlytics"
+patterns = ["crashlytics.com", "firebase-crashlytics"]
+category = "telemetry"
+severity = "medium"
+
+[[endpoints]]
+name = "New Relic"
+patterns = ["newrelic.com", "nr-data.net"]
+category = "telemetry"
+severity = "high"
+
+[[endpoints]]
+name = "Datadog"
+patterns = ["datadoghq.com", "browser-intake-datadoghq.com"]
+category = "telemetry"
+severity = "high"
+
+[[endpoints]]
+name = "Sentry"
+patterns = ["sentry.io", "ingest.sentry.io"]
+category = "telemetry"
+severity = "medium"
+
+[[endpoints]]
+name = "Heap Analytics"
+patterns = ["heap.io", "heapanalytics.com"]
+category = "telemetry"
+severity = "high"
+
+[[endpoints]]
+name = "Hotjar"
+patterns = ["hotjar.com", "script.hotjar.com"]
+category = "telemetry"
+severity = "high"
+
+[[endpoints]]
+name = "FullStory"
+patterns = ["fullstory.com", "rs.fullstory.com"]
+category = "telemetry"
+severity = "high"
+
+# IoT Cloud Platforms
+[[endpoints]]
+name = "AWS IoT"
+patterns = ["iot.amazonaws.com", "iot.us-east-1.amazonaws.com", "a]*.iot.*.amazonaws.com"]
+category = "cloud_iot"
+severity = "medium"
+
+[[endpoints]]
+name = "Azure IoT Hub"
+patterns = ["azure-devices.net", "iothub.azure.net"]
+category = "cloud_iot"
+severity = "medium"
+
+[[endpoints]]
+name = "Google Cloud IoT"
+patterns = ["cloudiot.googleapis.com", "pubsub.googleapis.com"]
+category = "cloud_iot"
+severity = "medium"
+
+[[endpoints]]
+name = "Tuya Smart"
+patterns = ["tuya.com", "tuyaus.com", "tuyaeu.com", "tuyacn.com"]
+category = "cloud_iot"
+severity = "high"
+
+[[endpoints]]
+name = "SmartThings"
+patterns = ["smartthings.com", "api.smartthings.com"]
+category = "cloud_iot"
+severity = "medium"
+
+[[endpoints]]
+name = "Philips Hue"
+patterns = ["meethue.com", "philips-hue.com"]
+category = "cloud_iot"
+severity = "medium"
+
+[[endpoints]]
+name = "Xiaomi IoT"
+patterns = ["xiaomi.com", "micloud.xiaomiyoupin.com", "api.io.mi.com"]
+category = "cloud_iot"
+severity = "high"
+
+# Network Stack Signatures
+[[stacks]]
+name = "lwIP"
+patterns = ["lwip", "LWIP_", "lwip_init", "tcp_write", "udp_sendto"]
+description = "Lightweight IP stack commonly used in embedded systems"
+
+[[stacks]]
+name = "uIP"
+patterns = ["uip_", "UIP_CONF", "uip_process"]
+description = "Ultra-small IP stack for 8-bit microcontrollers"
+
+[[stacks]]
+name = "FreeRTOS+TCP"
+patterns = ["FreeRTOS_", "xNetworkInterfaceInitialise", "FreeRTOS_IPInit"]
+description = "FreeRTOS TCP/IP stack"
+
+[[stacks]]
+name = "Zephyr Networking"
+patterns = ["zephyr/net", "NET_MGMT_", "net_if_"]
+description = "Zephyr RTOS networking stack"
+
+[[stacks]]
+name = "mbed OS"
+patterns = ["mbed-os", "MBED_CONF_", "nsapi_"]
+description = "ARM mbed OS networking"
+
+# TLS/SSL Libraries
+[[crypto_libs]]
+name = "OpenSSL"
+patterns = ["OpenSSL", "OPENSSL_", "SSL_CTX_new", "EVP_", "BIO_"]
+description = "OpenSSL cryptographic library"
+
+[[crypto_libs]]
+name = "mbedTLS"
+patterns = ["mbedtls", "MBEDTLS_", "mbedtls_ssl_", "mbedtls_pk_"]
+description = "ARM mbedTLS (formerly PolarSSL)"
+
+[[crypto_libs]]
+name = "wolfSSL"
+patterns = ["wolfSSL", "WOLFSSL_", "wolfSSL_Init", "wolfCrypt"]
+description = "wolfSSL (formerly CyaSSL)"
+
+[[crypto_libs]]
+name = "BearSSL"
+patterns = ["BearSSL", "br_ssl_", "br_sha256", "br_aes_"]
+description = "BearSSL lightweight TLS library"
+
+[[crypto_libs]]
+name = "libressl"
+patterns = ["libressl", "LibreSSL"]
+description = "LibreSSL fork of OpenSSL"
+
+# Protocol Indicators
+[[protocols]]
+name = "MQTT"
+patterns = ["mqtt", "MQTT", "MQTTClient", "mosquitto", "paho-mqtt"]
+category = "messaging"
+description = "Message Queuing Telemetry Transport"
+
+[[protocols]]
+name = "CoAP"
+patterns = ["coap://", "libcoap", "CoAP", "COAP_"]
+category = "messaging"
+description = "Constrained Application Protocol"
+
+[[protocols]]
+name = "AMQP"
+patterns = ["amqp://", "AMQP", "rabbitmq"]
+category = "messaging"
+description = "Advanced Message Queuing Protocol"
+
+[[protocols]]
+name = "WebSocket"
+patterns = ["ws://", "wss://", "WebSocket", "websocket_"]
+category = "realtime"
+description = "WebSocket protocol"
+
+[[protocols]]
+name = "gRPC"
+patterns = ["grpc://", "grpc.io", "grpc_"]
+category = "rpc"
+description = "gRPC remote procedure call"
+
+[[protocols]]
+name = "HTTP/2"
+patterns = ["h2", "HTTP/2", "SETTINGS", "PRIORITY", "PUSH_PROMISE"]
+category = "web"
+description = "HTTP/2 protocol"
+
+[[protocols]]
+name = "DNS"
+patterns = ["dns_query", "dns_resolve", "getaddrinfo", "gethostbyname"]
+category = "resolution"
+description = "Domain Name System"
+
+[[protocols]]
+name = "NTP"
+patterns = ["pool.ntp.org", "time.nist.gov", "ntp_", "sntp_"]
+category = "time"
+description = "Network Time Protocol"
+
+[[protocols]]
+name = "SNMP"
+patterns = ["SNMP", "snmp_", ".1.3.6.1", "community string"]
+category = "management"
+description = "Simple Network Management Protocol"
+
+[[protocols]]
+name = "Telnet"
+patterns = ["telnet", "23/tcp", "TELNET"]
+category = "remote"
+description = "Telnet remote access (insecure)"
+
+[[protocols]]
+name = "SSH"
+patterns = ["ssh", "SSH-2.0", "openssh", "dropbear"]
+category = "remote"
+description = "Secure Shell"
+
+[[protocols]]
+name = "UPnP"
+patterns = ["UPnP", "upnp_", "SSDP", "M-SEARCH"]
+category = "discovery"
+description = "Universal Plug and Play"
+
+[[protocols]]
+name = "mDNS"
+patterns = ["mdns", "_tcp.local", "_udp.local", "Bonjour"]
+category = "discovery"
+description = "Multicast DNS"
+
+[[protocols]]
+name = "Zigbee"
+patterns = ["zigbee", "ZigBee", "ZCL_", "zboss"]
+category = "wireless"
+description = "Zigbee wireless protocol"
+
+[[protocols]]
+name = "Z-Wave"
+patterns = ["zwave", "Z-Wave", "ZWAVE_"]
+category = "wireless"
+description = "Z-Wave wireless protocol"
+
+[[protocols]]
+name = "BLE"
+patterns = ["ble_", "BLE_", "bluetooth", "bluez", "hci_"]
+category = "wireless"
+description = "Bluetooth Low Energy"
+
+# Suspicious Network Patterns
+[[suspicious]]
+name = "Raw Socket"
+patterns = ["SOCK_RAW", "AF_PACKET", "pcap_", "raw_socket"]
+severity = "high"
+description = "Raw socket access can bypass firewalls"
+
+[[suspicious]]
+name = "Proxy/Tunnel"
+patterns = ["SOCKS", "socks4", "socks5", "shadowsocks", "tunnel"]
+severity = "high"
+description = "Proxy or tunnel software"
+
+[[suspicious]]
+name = "Port Scanning"
+patterns = ["nmap", "port_scan", "connect_scan", "syn_scan"]
+severity = "critical"
+description = "Network scanning capability"
+
+[[suspicious]]
+name = "Packet Injection"
+patterns = ["packet_inject", "scapy", "libnet"]
+severity = "critical"
+description = "Packet injection capability"
+
+[[suspicious]]
+name = "ARP Spoofing"
+patterns = ["arp_spoof", "arpspoof", "ettercap"]
+severity = "critical"
+description = "ARP spoofing tools"
